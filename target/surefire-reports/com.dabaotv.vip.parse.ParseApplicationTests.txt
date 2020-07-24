@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.dabaotv.vip.parse.ParseApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 13.502 s - in com.dabaotv.vip.parse.ParseApplicationTests
