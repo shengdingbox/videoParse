@@ -29,6 +29,7 @@ public enum VideoType {
     M3U8("m3u8"),
     MP4("mp4"),
     HLS("hls"),
+    PPX("pipix.com"),
 
 //    开眼视频
 //    http://www.eyepetizer.net/detail.html?vid=18376

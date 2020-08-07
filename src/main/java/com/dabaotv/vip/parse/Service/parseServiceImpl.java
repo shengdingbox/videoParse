@@ -52,7 +52,7 @@ public class parseServiceImpl implements ParseService {
         }
         VideoUrl videoByUrl = videoRepository.findVideoByUrl(url);
         if(videoByUrl != null){
-            videoByUrl.setUrl("http://qdylo2p39.bkt.clouddn.com/" + videoByUrl.getUrl());
+            videoByUrl.setUrl("https://m3u8.dabaotv.cn/" + videoByUrl.getUrl());
             String s = JSONObject.toJSONString(videoByUrl);
             redisUtils.set(videoByUrl.getOriginalUrl(), s);
             return s;
@@ -81,7 +81,7 @@ public class parseServiceImpl implements ParseService {
     }
 
     public VideoUrl JXDS(String url) {
-        String jiexiUrl = "https://api.dabaotv.cn/api.php?url=";
+        String jiexiUrl = "https://api.dabaotv.cn/api.php?danmu=0&url=";
         String data = HttpData.getData(jiexiUrl + url);
         VideoUrl videoUrl = JSONObject.parseObject(data, VideoUrl.class);
         String code = videoUrl.getCode();

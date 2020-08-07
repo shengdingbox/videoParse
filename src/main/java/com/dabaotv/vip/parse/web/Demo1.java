@@ -1,10 +1,17 @@
 package com.dabaotv.vip.parse.web;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import org.apache.catalina.connector.Response;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.UUID;
 
 /**
  * @author 周子斐
@@ -12,24 +19,25 @@ import java.net.URL;
  * @date 2020/7/23
  * @Description
  */
+@RestController
 public class Demo1 {
-    public static void main(String[] args) {
+    @Autowired
+    HttpServletResponse response;
+
+    @GetMapping("test")
+    public void a123(String videoUrl) {
         //File file = new File("FoXakn1Zx_JXn6AhPxpkXruT4kvt.m3u8");
         try{
-            URL url = new URL("https://images.dabaotv.cn/FoXakn1Zx_JXn6AhPxpkXruT4kvt");
+            URL url = new URL(videoUrl);
             StringBuilder result = new StringBuilder();
             //构造一个BufferedReader类来读取文件
             BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
             String s = null;
             //使用readLine方法，一次读一行
             while((s = br.readLine())!=null){
-                if(!s.contains("#")){
-                    result.append( "https://10235.vcdn.pplive.cn" + s + "\n");
-                }else {
-                    result.append( s + "\n");
-                }
+                ServletOutputStream outputStream = response.getOutputStream();
+                outputStream.write(Integer.parseInt(s));
             }
-            System.out.println(result);
             br.close();
         }catch(Exception e){
             e.printStackTrace();

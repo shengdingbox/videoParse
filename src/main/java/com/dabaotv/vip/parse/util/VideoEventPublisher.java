@@ -12,12 +12,14 @@ import com.qiniu.util.Auth;
 import com.qiniu.util.StringUtils;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 /**
@@ -36,6 +38,15 @@ public class VideoEventPublisher {
     @Autowired
     VideoRepository videoRepository;
 
+    @Value("file.accessKey")
+    String accessKey;
+    @Value("file.secretKey")
+    String secretKey;
+    @Value("file.bucket")
+    String bucket;
+    @Value("file.url")
+    String url;
+
 
     /**
      * 新增券流水
@@ -43,11 +54,11 @@ public class VideoEventPublisher {
     @RabbitListener(queues = Queues.SAVE)
     public void saveCoupFlowEvent(VideoUrl videoUrl) {
         String originalUrl = videoUrl.getOriginalUrl();
-        saveM3u8(videoUrl,originalUrl);
+        saveM3u8(videoUrl, originalUrl);
         videoRepository.save(videoUrl);
-        videoUrl.setUrl("http://qdylo2p39.bkt.clouddn.com/" + videoUrl.getUrl());
+        videoUrl.setUrl(url + videoUrl.getUrl());
         String s = JSONObject.toJSONString(videoUrl);
-        redisUtils.set(originalUrl, s);
+        redisUtils.set(originalUrl, s,86635);
     }
 
     private void saveM3u8(VideoUrl videoUrl, String originalUrl) {
@@ -75,11 +86,8 @@ public class VideoEventPublisher {
         //...其他参数参考类注释
         UploadManager uploadManager = new UploadManager(cfg);
         //...生成上传凭证，然后准备上传
-        String accessKey = "EQSTit4nxmAmnN-uGiufJXVrGb1F8FzAym89lrsI";
-        String secretKey = "simNyXeM2QaxmIU97549RMNat1dNU4uF2WoizkgA";
-        String bucket = "m3u8play";
         //默认不指定key的情况下，以文件内容的hash值作为文件名
-        String replace = UUID.randomUUID().toString().replace("-", "");
+        String replace = UUID.randomUUID().toString().replace("-" , "");
         String key = replace + ".m3u8";
         try {
             URL file = new URL(url);
@@ -88,28 +96,29 @@ public class VideoEventPublisher {
             // 设定请求的方法，默认是GET
             connection.setRequestMethod("GET");
             // 设置字符编码
-            connection.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible;MSIE 7.0; Windows NT 5.1; Maxthon;)");
-            connection.setRequestProperty("Accept-Encoding", "gzip");
-            connection.setRequestProperty("referer", domain);
-            connection.setRequestProperty("cookie", "http://control.blog.sina.com.cn");
+            connection.setRequestProperty("User-Agent" , "Mozilla/4.0 (compatible;MSIE 7.0; Windows NT 5.1; Maxthon;)");
+            connection.setRequestProperty("Accept-Encoding" , "UTF-8");
+            connection.setRequestProperty("referer" , domain);
+            //connection.setRequestProperty("cookie" , "http://control.blog.sina.com.cn");
+            System.out.println(connection.getContentEncoding());
             // 打开到此 URL 引用的资源的通信链接（如果尚未建立这样的连接）。
             connection.connect();
             InputStream inputStream = connection.getInputStream();
-            if (!StringUtils.isNullOrEmpty(prefixUrl)) {
-                StringBuilder result = new StringBuilder();
-                //构造一个BufferedReader类来读取文件
-                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-                String s = null;
-                //使用readLine方法，一次读一行
-                while (((s = br.readLine()) != null)) {
-                    if (!s.contains("#")) {
-                        result.append(prefixUrl + s + "\n");
-                    } else {
-                        result.append(s + "\n");
-                    }
+            StringBuilder result = new StringBuilder();
+            //构造一个BufferedReader类来读取文件
+            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+            String s = null;
+            //使用readLine方法，一次读一行
+            prefixUrl = prefixUrl == null ? "" : prefixUrl;
+            while (((s = br.readLine()) != null)) {
+                if (!s.contains("#")) {
+                    result.append(prefixUrl + s + "\n");
+                } else {
+                    result.append(s + "\n");
                 }
-                inputStream = new ByteArrayInputStream(result.toString().getBytes());
             }
+            inputStream = new ByteArrayInputStream(result.toString().getBytes(StandardCharsets.UTF_8));
+            System.out.println(result);
             Auth auth = Auth.create(accessKey, secretKey);
             String upToken = auth.uploadToken(bucket);
             try {
