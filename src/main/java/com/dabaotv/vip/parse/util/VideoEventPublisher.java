@@ -9,7 +9,7 @@ import com.qiniu.storage.Configuration;
 import com.qiniu.storage.Region;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
-import com.qiniu.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,23 +38,26 @@ public class VideoEventPublisher {
     @Autowired
     VideoRepository videoRepository;
 
-    @Value("file.accessKey")
+    @Value("${file.accessKey}")
     String accessKey;
-    @Value("file.secretKey")
+    @Value("${file.secretKey}")
     String secretKey;
-    @Value("file.bucket")
+    @Value("${file.bucket}")
     String bucket;
-    @Value("file.url")
+    @Value("${file.url}")
     String url;
 
 
     /**
-     * 新增券流水
+     * 新增视频
      */
     @RabbitListener(queues = Queues.SAVE)
     public void saveCoupFlowEvent(VideoUrl videoUrl) {
         String originalUrl = videoUrl.getOriginalUrl();
         saveM3u8(videoUrl, originalUrl);
+        if(StringUtils.isBlank(videoUrl.getUrl())){
+            return;
+        }
         videoRepository.save(videoUrl);
         videoUrl.setUrl(url + videoUrl.getUrl());
         String s = JSONObject.toJSONString(videoUrl);
@@ -68,6 +71,9 @@ public class VideoEventPublisher {
         }
         videoUrl.setOriginalUrl(originalUrl);
         String parseUrl = videoUrl.getUrl();
+        if(StringUtils.isBlank(parseUrl)){
+            return;
+        }
         if (originalUrl.contains(VideoType.CCTV.getType())) {
             //cctv,可以解析  去掉最后一个/后的拼播放地址就行
             int i = parseUrl.lastIndexOf("/");
@@ -112,13 +118,12 @@ public class VideoEventPublisher {
             prefixUrl = prefixUrl == null ? "" : prefixUrl;
             while (((s = br.readLine()) != null)) {
                 if (!s.contains("#")) {
-                    result.append(prefixUrl + s + "\n");
+                    result.append(prefixUrl).append(s).append("\n");
                 } else {
-                    result.append(s + "\n");
+                    result.append(s).append("\n");
                 }
             }
             inputStream = new ByteArrayInputStream(result.toString().getBytes(StandardCharsets.UTF_8));
-            System.out.println(result);
             Auth auth = Auth.create(accessKey, secretKey);
             String upToken = auth.uploadToken(bucket);
             try {

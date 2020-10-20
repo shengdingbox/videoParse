@@ -65,23 +65,23 @@ public class parseServiceImpl implements ParseService {
             videoUrl.setPlayer("ckplayer");
             videoUrl.setType("m3u8");
             return JSONObject.toJSONString(videoUrl);
-        } else if (url.contains(VideoType.MGTV.getType())
-                || url.contains(VideoType.QQ.getType())
-                || url.contains(VideoType.PPTV.getType())
-                || url.contains(VideoType.SOHU.getType())
-                || url.contains(VideoType.YOUKU.getType())
-                || url.contains(VideoType.AQIYI.getType())
-                || url.contains(VideoType.MIGU.getType())) {
-            VideoUrl videoUrl = JXDS(url);
-            return JSONObject.toJSONString(videoUrl);
-        } else {
-            VideoUrl videoUrl = CKMOV(url);
+//        } else if (url.contains(VideoType.MGTV.getType())
+//                || url.contains(VideoType.QQ.getType())
+//                || url.contains(VideoType.PPTV.getType())
+//                || url.contains(VideoType.AQIYI.getType())
+//                || url.contains(VideoType.MIGU.getType())) {
+//            VideoUrl videoUrl = JXDS(url);
+//            return JSONObject.toJSONString(videoUrl);
+//        } else {
+        }else{
+//            VideoUrl videoUrl = CKMOV(url);
+            VideoUrl videoUrl = SAOZHU(url);
             return JSONObject.toJSONString(videoUrl);
         }
     }
 
     public VideoUrl JXDS(String url) {
-        String jiexiUrl = "https://api.dabaotv.cn/api.php?danmu=0&url=";
+        String jiexiUrl = "https://user.htv009.com/json?url=";
         String data = HttpData.getData(jiexiUrl + url);
         VideoUrl videoUrl = JSONObject.parseObject(data, VideoUrl.class);
         String code = videoUrl.getCode();
@@ -99,9 +99,28 @@ public class parseServiceImpl implements ParseService {
         }
         return videoUrl;
     }
+    public VideoUrl SAOZHU(String url) {
+        String jiexiUrl = "http://sz.saozhuys.com/analysis/json/?uid=32&my=bjorwxyEFJSUZ23458&url=";
+        String data = HttpData.getData(jiexiUrl + url);
+        VideoUrl videoUrl = JSONObject.parseObject(data, VideoUrl.class);
+        String code = videoUrl.getCode();
+        String type = videoUrl.getType();
+//        if (!"200".equals(code)
+//                || url.contains(VideoType.MGTV.getType())
+//                || url.contains(VideoType.QQ.getType())
+//                || url.contains(VideoType.PPTV.getType())) {
+//            //解析失败，待完善,土豆500,乐视404,1904-404,360-500,音悦台500,华数404,新浪500,开眼视频500,2mm-500
+//            return videoUrl;
+//        }
+//        if (VideoType.M3U8.getType().equals(type) || VideoType.HLS.getType().equals(type)) {
+//            videoUrl.setOriginalUrl(url);
+//            template.convertAndSend(Queues.SAVE,videoUrl);
+//        }
+        return videoUrl;
+    }
 
     public VideoUrl CKMOV(String url) {
-        String jiexiUrl = "http://api.dabaotv.cn/nxflv/?url=";
+        String jiexiUrl = "http://api.dabaotv.cn/nxflv/json.php?url=";
         String data = HttpData.getData(jiexiUrl + url);
         VideoUrl videoUrl = JSONObject.parseObject(data, VideoUrl.class);
         String code = videoUrl.getCode();

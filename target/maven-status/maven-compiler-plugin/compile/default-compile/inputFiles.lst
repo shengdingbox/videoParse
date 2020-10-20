@@ -1,4 +1,6 @@
+/Users/Dabao/develop/workspace/private/videoParse/src/main/java/com/dabaotv/vip/parse/web/DEJI.java
 /Users/Dabao/develop/workspace/private/videoParse/src/main/java/com/dabaotv/vip/parse/web/Demo1.java
+/Users/Dabao/develop/workspace/private/videoParse/src/main/java/com/dabaotv/vip/parse/util/IpUtil.java
 /Users/Dabao/develop/workspace/private/videoParse/src/main/java/com/dabaotv/vip/parse/ParseApplication.java
 /Users/Dabao/develop/workspace/private/videoParse/src/main/java/com/dabaotv/vip/parse/web/PPXUtil.java
 /Users/Dabao/develop/workspace/private/videoParse/src/main/java/com/dabaotv/vip/parse/dto/VideoUrl.java
@@ -6,6 +8,7 @@
 /Users/Dabao/develop/workspace/private/videoParse/src/main/java/com/dabaotv/vip/parse/Service/ParseService.java
 /Users/Dabao/develop/workspace/private/videoParse/src/main/java/com/dabaotv/vip/parse/util/RedisConfig.java
 /Users/Dabao/develop/workspace/private/videoParse/src/main/java/com/dabaotv/vip/parse/util/RedisUtils.java
+/Users/Dabao/develop/workspace/private/videoParse/src/main/java/com/dabaotv/vip/parse/web/Demosaozhu.java
 /Users/Dabao/develop/workspace/private/videoParse/src/main/java/com/dabaotv/vip/parse/repository/VideoRepository.java
 /Users/Dabao/develop/workspace/private/videoParse/src/main/java/com/dabaotv/vip/parse/util/VideoType.java
 /Users/Dabao/develop/workspace/private/videoParse/src/main/java/com/dabaotv/vip/parse/util/HttpData.java
@@ -13,3 +16,4 @@
 /Users/Dabao/develop/workspace/private/videoParse/src/main/java/com/dabaotv/vip/parse/util/VideoEventPublisher.java
 /Users/Dabao/develop/workspace/private/videoParse/src/main/java/com/dabaotv/vip/parse/web/demo.java
 /Users/Dabao/develop/workspace/private/videoParse/src/main/java/com/dabaotv/vip/parse/web/parseAPI.java
+/Users/Dabao/develop/workspace/private/videoParse/src/main/java/com/dabaotv/vip/parse/util/HttpUtils.java

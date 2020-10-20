@@ -21,9 +21,9 @@ public enum VideoType {
     PPTV("pptv.com"),
     M1905("1905.com"),
     MIGU("miguvideo.com"),
-    YIYUETAI("yinyuetai.com"),
+    YIYUETAI("yinyuetai.com"),//失败
     M360("360kan.com"),
-    WASU("wasu.cn"),
+    WASU("wasu.cn"),//mp4
     CCTV("cctv.com"),
     SINA("sina.com.cn"),
     M3U8("m3u8"),
