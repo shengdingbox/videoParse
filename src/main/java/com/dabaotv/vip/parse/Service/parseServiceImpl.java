@@ -65,7 +65,7 @@ public class parseServiceImpl implements ParseService {
         Object o = redisUtils.get(url);
         if (o != null) {
             String o1 = (String) o;
-            log.info("视频解析成功,原始地址为{},解析地址为{}",url,o1);
+            log.info("视频解析成功,原始地址为{},解析地址为{}", url, o1);
             return o1;
         }
 //        VideoUrl videoByUrl = videoRepository.findVideoByUrl(url);
@@ -75,26 +75,63 @@ public class parseServiceImpl implements ParseService {
 //            redisUtils.set(videoByUrl.getOriginalUrl(), s);
 //            return s;
 //        }
-        String jxApi = VideoType.getValue(url);
+        //String jxApi = VideoType.getValue(url);
         String key = VideoType.getKey(url);
-        VideoUrl videoUrl;
-        switch (jxApi) {
-            case "JXDS":
-                videoUrl = parseUtils.JXDS(url);
-                break;
-            case "CKMOV":
-                videoUrl = parseUtils.CKMOV(url);
-                break;
-            default:
-                videoUrl = parseUtils.SAOZHU(url);
+        Thread thread1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                VideoUrl videoUrl = parseUtils.JXDS(url);
+                parseVideo(videoUrl,url,key);
+            }
+        });
+        Thread thread2 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                VideoUrl videoUrl = parseUtils.CKMOV(url);
+                parseVideo(videoUrl,url,key);
+            }
+        });
+        Thread thread3 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                VideoUrl videoUrl = parseUtils.SAOZHU(url);
+                parseVideo(videoUrl,url,key);
+            }
+        });
+        thread1.start();
+        thread2.start();
+        thread3.start();
+//        switch (jxApi) {
+//            case "JXDS":
+//                videoUrl = parseUtils.JXDS(url);
+//                break;
+//            case "CKMOV":
+//                videoUrl = parseUtils.CKMOV(url);
+//                break;
+//            default:
+//
+//        }
+        boolean isTrue = true;
+        while (isTrue) {
+            boolean b = redisUtils.hasKey(url);
+            isTrue = !b;
+
         }
+        //videoUrl.setUrl(url + videoUrl.getUrl());
+        return (String) redisUtils.get(url);
+    }
+
+    public void parseVideo(VideoUrl videoUrl,String url,String key){
         videoUrl.setOriginalUrl(url);
         videoUrl.setPrefixType(key);
         //开始保存MQ
-        template.convertAndSend(Queues.SAVE,videoUrl);
-        String s = JSONObject.toJSONString(videoUrl);
-        redisUtils.set(videoUrl.getOriginalUrl(), s, 86635);
-        //videoUrl.setUrl(url + videoUrl.getUrl());
-        return s;
+        if("200".equals(videoUrl.getCode())){
+            template.convertAndSend(Queues.SAVE, videoUrl);
+            String s = JSONObject.toJSONString(videoUrl);
+            redisUtils.set(videoUrl.getOriginalUrl(), s, 86635);
+            log.info("当前线程为{},响应为{}", Thread.currentThread().getName(), s);
+        }else{
+            log.info("当前线程为{}", Thread.currentThread().getName());
+        }
     }
 }

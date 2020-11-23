@@ -24,6 +24,11 @@ public class ParseUtils {
         String jiexiUrl = "https://user.htv009.com/json?url=";
         String data = HttpData.getData(jiexiUrl + url);
         VideoUrl videoUrl = JSONObject.parseObject(data, VideoUrl.class);
+        if(videoUrl == null){
+            videoUrl = new VideoUrl();
+            videoUrl.setCode("404");
+            return videoUrl;
+        }
         String code = videoUrl.getCode();
         if (!"200".equals(code)) {
             //解析失败，
@@ -38,6 +43,17 @@ public class ParseUtils {
         String jiexiUrl = "http://api.dabaotv.cn/nxflv/json.php?url=";
         String data = HttpData.getData(jiexiUrl + url);
         VideoUrl videoUrl = JSONObject.parseObject(data, VideoUrl.class);
+        if(videoUrl == null){
+            videoUrl = new VideoUrl();
+            videoUrl.setCode("404");
+            return videoUrl;
+        }
+        String code = videoUrl.getCode();
+        if (!"200".equals(code)) {
+            //解析失败，
+            log.error("------------------CKMOV解析视频失败,正在转换SAOZHU-------------------");
+            return SAOZHU(url);
+        }
         log.info("CKMOV解析视频,解析完成{}",videoUrl);
         return videoUrl;
     }
@@ -46,6 +62,11 @@ public class ParseUtils {
         String jiexiUrl = "http://sz.saozhuys.com/analysis/json/?uid=32&my=bjorwxyEFJSUZ23458&url=";
         String data = HttpData.getData(jiexiUrl + url);
         VideoUrl videoUrl = JSONObject.parseObject(data, VideoUrl.class);
+        if(videoUrl == null){
+            videoUrl = new VideoUrl();
+            videoUrl.setCode("404");
+            return videoUrl;
+        }
         String code = videoUrl.getCode();
         if (!"200".equals(code)) {
             //解析失败，
