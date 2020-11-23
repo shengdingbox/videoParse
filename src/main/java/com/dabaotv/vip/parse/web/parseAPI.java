@@ -4,6 +4,7 @@ import com.dabaotv.vip.parse.Service.ParseService;
 import com.dabaotv.vip.parse.util.IpUtil;
 import com.dabaotv.vip.parse.util.VideoType;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +31,9 @@ public class parseAPI {
     @GetMapping("parse")
     public String parseUrl(String url){
         log.info(IpUtil.getIpAddr(request));
+        if(StringUtils.isEmpty(url)){
+            return "请输入url";
+        }
         if(url.contains(VideoType.MIGU.getType())){
             return parseService.parseUrl(url);
         }

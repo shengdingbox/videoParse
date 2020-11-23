@@ -10,26 +10,26 @@ import lombok.Data;
  */
 
 public enum VideoType {
-    XIGUA("xgsp"),
-    YOUKU("youku.com"),
-    TUDOU("tudou.com"),
-    AQIYI("iqiyi.com"),
-    MGTV("mgtv.com"),
-    LETV("le.com"),
-    QQ("qq.com"),
-    SOHU("sohu.com"),
-    PPTV("pptv.com"),
-    M1905("1905.com"),
-    MIGU("miguvideo.com"),
-    YIYUETAI("yinyuetai.com"),//失败
-    M360("360kan.com"),
-    WASU("wasu.cn"),//mp4
-    CCTV("cctv.com"),
-    SINA("sina.com.cn"),
-    M3U8("m3u8"),
-    MP4("mp4"),
-    HLS("hls"),
-    PPX("pipix.com"),
+    XIGUA("xgsp","SAOZHU","N"),//失败
+    YOUKU("youku.com","JXDS","N"),//成功
+    TUDOU("tudou.com","SAOZHU","N"),
+    AQIYI("iqiyi.com","SAOZHU","Y"),
+    MGTV("mgtv.com","SAOZHU","N"),//成功
+    LETV("le.com","SAOZHU","N"),
+    QQ("qq.com","SAOZHU","N"),
+    SOHU("sohu.com","SAOZHU","Y"),
+    PPTV("pptv.com","SAOZHU","N"),
+    M1905("1905.com","SAOZHU","N"),
+    MIGU("miguvideo.com","JXDS","N"),
+    YIYUETAI("yinyuetai.com","SAOZHU","N"),
+    M360("360kan.com","SAOZHU","N"),
+    WASU("wasu.cn","SAOZHU","N"),
+    CCTV("cctv.com","SAOZHU","N"),
+    SINA("sina.com.cn","SAOZHU","N"),
+    M3U8("m3u8","SAOZHU","N"),
+    MP4("mp4","SAOZHU","N"),
+    HLS("hls","SAOZHU","N"),
+    PPX("pipix.com","SAOZHU","N"),
 
 //    开眼视频
 //    http://www.eyepetizer.net/detail.html?vid=18376
@@ -65,9 +65,13 @@ public enum VideoType {
     ;
 
     private String type;
+    private String desc;
+    private String isSave;
 
-    VideoType(String type) {
+    VideoType(String type, String desc,String isSave) {
         this.type = type;
+        this.desc = desc;
+        this.isSave= isSave;
     }
 
     public String getType() {
@@ -77,4 +81,48 @@ public enum VideoType {
     public void setType(String type) {
         this.type = type;
     }
+
+    public String getDesc() {
+        return desc;
     }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public String getIsSave() {
+        return isSave;
+    }
+
+    public void setIsSave(String isSave) {
+        this.isSave = isSave;
+    }
+
+    public static String getValue(String url) {
+        VideoType[] videoTypes = values();
+        for (VideoType videoType : videoTypes) {
+            if (url.contains(videoType.getType())) {
+                return videoType.getDesc();
+            }
+        }
+        return "SAOZHU";
+    }
+    public static String getKey(String url) {
+        VideoType[] videoTypes = values();
+        for (VideoType videoType : videoTypes) {
+            if (url.contains(videoType.getType())) {
+                return videoType.getType();
+            }
+        }
+        return "defult";
+    }
+    public static String getSave(String url) {
+        VideoType[] videoTypes = values();
+        for (VideoType videoType : videoTypes) {
+            if (url.contains(videoType.getType())) {
+                return videoType.getIsSave();
+            }
+        }
+        return "N";
+    }
+}

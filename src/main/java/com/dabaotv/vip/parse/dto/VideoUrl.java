@@ -30,4 +30,5 @@ public class VideoUrl implements Serializable {
     private String domain;
     private String originalUrl;
     private String prefixUrl;
+    private String prefixType;
 }

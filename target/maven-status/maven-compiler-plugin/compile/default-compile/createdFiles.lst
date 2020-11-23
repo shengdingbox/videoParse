@@ -13,6 +13,7 @@ com/dabaotv/vip/parse/web/PPXUtil.class
 com/dabaotv/vip/parse/ParseApplication.class
 com/dabaotv/vip/parse/util/VideoEventPublisher.class
 com/dabaotv/vip/parse/Service/ParseService.class
+com/dabaotv/vip/parse/util/ParseUtils.class
 com/dabaotv/vip/parse/util/HttpData.class
 com/dabaotv/vip/parse/web/DEJI.class
 com/dabaotv/vip/parse/util/VideoType.class
