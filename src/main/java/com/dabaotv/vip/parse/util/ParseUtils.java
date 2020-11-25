@@ -3,6 +3,7 @@ package com.dabaotv.vip.parse.util;
 import com.alibaba.fastjson.JSONObject;
 import com.dabaotv.vip.parse.dto.VideoUrl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -18,6 +19,8 @@ import java.net.InetAddress;
 @Slf4j
 public class ParseUtils {
 
+    @Autowired
+    RedisUtils redisUtils;
 
     public VideoUrl JXDS(String url) {
         log.info("JXDS解析视频,解析地址为{}",url);
@@ -25,6 +28,11 @@ public class ParseUtils {
         String data = HttpData.getData(jiexiUrl + url);
         VideoUrl videoUrl = JSONObject.parseObject(data, VideoUrl.class);
         if(videoUrl == null){
+            videoUrl = new VideoUrl();
+            videoUrl.setCode("404");
+            return videoUrl;
+        }
+        if(redisUtils.hasKey(url)){
             videoUrl = new VideoUrl();
             videoUrl.setCode("404");
             return videoUrl;
@@ -48,6 +56,11 @@ public class ParseUtils {
             videoUrl.setCode("404");
             return videoUrl;
         }
+        if(redisUtils.hasKey(url)){
+            videoUrl = new VideoUrl();
+            videoUrl.setCode("404");
+            return videoUrl;
+        }
         String code = videoUrl.getCode();
         if (!"200".equals(code)) {
             //解析失败，
@@ -63,6 +76,11 @@ public class ParseUtils {
         String data = HttpData.getData(jiexiUrl + url);
         VideoUrl videoUrl = JSONObject.parseObject(data, VideoUrl.class);
         if(videoUrl == null){
+            videoUrl = new VideoUrl();
+            videoUrl.setCode("404");
+            return videoUrl;
+        }
+        if(redisUtils.hasKey(url)){
             videoUrl = new VideoUrl();
             videoUrl.setCode("404");
             return videoUrl;

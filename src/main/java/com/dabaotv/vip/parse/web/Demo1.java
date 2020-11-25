@@ -1,17 +1,14 @@
 package com.dabaotv.vip.parse.web;
 
-import org.apache.catalina.connector.Response;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.UUID;
 
 /**
  * @author 周子斐

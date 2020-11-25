@@ -1,6 +1,6 @@
 package com.dabaotv.vip.parse.web;
 
-import com.dabaotv.vip.parse.Service.ParseService;
+import com.dabaotv.vip.parse.service.ParseService;
 import com.dabaotv.vip.parse.util.IpUtil;
 import com.dabaotv.vip.parse.util.VideoType;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +34,8 @@ public class parseAPI {
         if(StringUtils.isEmpty(url)){
             return "请输入url";
         }
+        String ipAddr = IpUtil.getIpAddr(request);
+        log.info("来源地址为{}",ipAddr);
         if(url.contains(VideoType.MIGU.getType())){
             return parseService.parseUrl(url);
         }
