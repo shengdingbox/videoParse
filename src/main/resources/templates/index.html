@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=11"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>智能解析系统</title>
+    <style type="text/css">body, html, .content {
+        background-color: black;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        color: #999;
+    }
+
+    .divs {
+        width: 100%;
+        height: auto;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 999
+    }</style>
+    <script type="text/javascript" src="<?php echo $dir;?>/jquery.min.js"></script>
+
+    <script type="text/javascript">
+        if (document.domain != '<?=$user['domain'];?>'){window.location.href='<?=$user['tiaodomain'];?>';}
+    </script>
+
+</head>
+<body style="overflow-y:hidden;">
+<div id="loading" align="center">
+    <div style="padding-top:20%;width:100%;height:100%"><span class="tips">正在加载中，请稍候... <font class="timemsg">0</font> 秒</span>
+    </div>
+    <span class="timeout" style="display:none;color:#f90;">服务器响应超时，请刷新重试！</span></div>
+<input type="hidden" id="k1" value='<?= time(); ?>'/>
+<div id="a1" class="content" style="display:none;width:100%;height:100%" align="center"></div>
+<div id="error" class="content" style="display:none;color:#f90;padding-top:20%;width='100%';height='100%"
+     align="center"></div>
+<script type="text/javascript">
+function tipstime(count)
+{
+    $('.timemsg').text(count);
+    if (count == 20)
+    {
+       $('.tips').hide();
+       $('.timeout').show();
+    }
+    else
+    {
+        count += 1;
+        setTimeout(function () {
+            tipstime(count);
+        }, 1000);
+    }
+}
+tipstime(0);
+
+function player()
+{
+	var isMobile = navigator.userAgent.match(/iPad|iPhone|Android|Linux|iPod/i)!=null;
+	var autoplay = isMobile ? <?php echo intval($user['h5']); ?> : <?php echo intval($user['autoplay']); ?>;
+
+	$.get("parse",{'url':'<?php echo $_GET["url"]; ?>', 'danmu': <?php echo intval($_GET["danmu"]);?>},function(data){
+	if(data.code=="200")
+	{
+		if(data.play == 'txvd')
+		{
+			$.ajax(
+				{
+					url:data.url,
+					async:false,
+					type:'get',
+					data:{},
+					dataType:'json',
+					success:function(v)
+					{
+						var v = JSON.parse(v['vinfo']);
+    					data.url = v["vl"]["vi"][0]["ul"]["ui"][0]["url"] + v['vl']['vi'][0]['fn'] + "?vkey=" + v['vl']['vi'][0]['fvkey'];
+					}
+				});
+		}
+
+		if(data.type=='url')
+		{
+			$("#a1").html('<iframe width="100%" height="100%" src="'+data.url+'" frameborder="0" border="0" marginwidth="0" marginheight="0" scrolling="no" allowfullscreen="allowfullscreen" mozallowfullscreen="mozallowfullscreen" msallowfullscreen="msallowfullscreen" oallowfullscreen="oallowfullscreen" webkitallowfullscreen="webkitallowfullscreen" style="position: relative;z-index: 9999999;"></iframe>');
+		}
+		else if(data.type == 'm3u8' || data.type == 'mp4' || data.type == 'hls')
+		{
+			if(data.flash)
+			{
+				data.player = 'ckplayer';
+			}
+			else if(data.danmuvid)
+			{
+				data.player = 'yzmplayer';
+			}
+			else
+			{
+				data.player = 'dplayer';
+			}
+
+			if(data.type == 'm3u8')
+			{
+				data.type = 'hls';
+			}
+
+			<?php if($player){?>
+				data.player = '<?php echo $player;?>';
+			<?php }?>
+
+			var frameurl = "";
+			if(data.player=="h5")
+			{
+				frameurl = "<?php echo $dir;?>/h5.php?url=" + encodeURIComponent(data.url) + "&type=" + data.type + "&autoplay=" + autoplay + "&poster=" + encodeURIComponent("<?php echo $dir;?>/img/loading_wap.gif") + "&metareferer=" +data.metareferer;
+			}
+			else if(data.player=="ckplayer")
+			{
+				frameurl = "<?php echo $dir;?>/ck.php?url=" + encodeURIComponent(data.url) + "&type=" + data.type + "&autoplay=" + autoplay + "&poster=" + encodeURIComponent("<?php echo $dir;?>/img/loading_wap.gif") + "&flash=" + data.flash + "&metareferer=" +data.metareferer;
+			}
+			else if(data.player=="dplayer")
+			{
+				frameurl = "<?php echo $dir;?>/dp.php?url=" + encodeURIComponent(data.url) + "&type=" + data.type + "&autoplay=" + autoplay + "&poster=" + encodeURIComponent("<?php echo $dir;?>/img/loading_wap.gif") + "&metareferer=" +data.metareferer;
+			}
+			else if(data.player=="yzmplayer")
+			{
+				frameurl = "<?php echo $dir;?>/yzm.php?url=" + encodeURIComponent(data.url) + "&type=" + data.type + "&autoplay=" + autoplay + "&poster=" + encodeURIComponent("<?php echo $dir;?>/img/loading_wap.gif") + "&metareferer=" +data.metareferer + "&danmuvid=" + data.danmuvid;
+			}
+			$("#a1").html('<iframe width="100%" height="100%" src="'+frameurl+'" frameborder="0" border="0" marginwidth="0" marginheight="0" scrolling="no" allowfullscreen="allowfullscreen" mozallowfullscreen="mozallowfullscreen" msallowfullscreen="msallowfullscreen" oallowfullscreen="oallowfullscreen" webkitallowfullscreen="webkitallowfullscreen" style="position: relative;z-index: 9999999;"></iframe>');
+			$("#error").hide();
+			$("#loading").hide();
+			$("#a1").show();
+		}
+		else
+		{
+			$("#a1").html('解析失败');
+			$("#error").hide();
+			$("#loading").hide();
+			$("#a1").show();
+		}
+	}
+	else
+	{
+		<?php if($user['online'] >0)
+		{?>
+			$("#a1").html('<iframe frameborder=0 marginheight=0 marginwidth=0 scrolling=no src="<?=$user['ather'];?><?php echo $_GET["url"]; ?>" width="100%" height="100%" allowfullscreen="true"></iframe>');
+			$("#error").hide();
+			$("#loading").hide();
+			$("#a1").show();
+		<?php
+		}else{?>
+    		$("#a1").html('解析失败');
+    		$("#error").hide();
+    		$("#loading").hide();
+    		$("#a1").show();
+		<?php }?>
+	}
+	},'json');
+}
+
+$(function(){
+	player();
+});
+
+
+</script>
+<?php
+if(!empty($user['tongji']))
+{
+    echo "<div style=\"display:none\">";
+$tongji=explode(',',$user['tongji']);
+foreach($tongji as $value)
+{
+echo "
+<script type='text/javascript' src='$value'></script>
+";
+}
+echo "</div>";
+}
+?>
+</body>
+</html>
